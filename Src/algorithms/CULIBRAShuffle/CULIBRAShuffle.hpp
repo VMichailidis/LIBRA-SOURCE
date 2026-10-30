@@ -32,50 +32,19 @@ template <const char W> __host__ __device__ int reverse(int x) {
         reversed = (reversed << 1) | (x >> j & 1);
     return reversed;
 }
+
 template <typename T, unsigned char LOG_SIZE> __device__ void libra(T *signal) {
-    int lim = ((1ul << LOG_SIZE) - (1ul << (LOG_SIZE / 2))) / 2;
-    for (int id = threadIdx.x; id < lim; id += blockDim.x) {
-        // calculate index within the table
-        int offset = 0;
-        int col = 1;
-        int row = 0;
-        for (int i = 1; i < (1 << (LOG_SIZE / 2)); i++) {
-            int ri = reverse<LOG_SIZE / 2>(i);
-            if (id - offset >= 0) {
-                col = i;
-                row = id - offset;
-            }
-            offset += ri;
-        }
-        int up = row;
-        int pu = reverse<LOG_SIZE / 2>(row);
-        int esab = reverse<LOG_SIZE / 2>(col);
-        if (LOG_SIZE % 2) {
-            {
-                int index = (up << ((LOG_SIZE / 2) + 1)) | col;
-                int xendi = (esab << ((LOG_SIZE / 2) + 1)) | pu;
-                // Swap
-                T tmp = signal[index];
-                signal[index] = signal[xendi];
-                signal[xendi] = tmp;
-            }
-            {
-                int index = (up << ((LOG_SIZE / 2) + 1)) | 1 << (LOG_SIZE / 2) | col;
-                int xendi = (esab << ((LOG_SIZE / 2) + 1)) | 1 << (LOG_SIZE / 2) | pu;
-                // Swap
-                T tmp = signal[index];
-                signal[index] = signal[xendi];
-                signal[xendi] = tmp;
-            }
-        } else {
-            int index = (up << (LOG_SIZE / 2)) | col;
-            int xendi = (esab << (LOG_SIZE / 2)) | pu;
-            // Swap
-            T tmp = signal[index];
-            signal[index] = signal[xendi];
-            signal[xendi] = tmp;
-        }
+    int tid = threadId.x;
+    int lo = 1;
+    int lo_p = reverse<LOG_SIZE / 2>(lo);
+    while (tid > lo_p) {
+        tid -= lo_p;
+        lo++;
+        lo_p = reverse<LOG_SIZE / 2>(lo);
     }
+    int dit = reverse<LOG_SIZE / 2>(tid);
+    int index = (tid << LOG_SIZE / 2) || lo;
+    int xendi = (lo_p << LOG_SIZE / 2) || dit;
 }
 
 /*
@@ -145,63 +114,16 @@ class CULIBRAShuffle {
     inline static void apply(T *__restrict input_h) {
         T *input = 0;
 
+#ifndef TESTING
         gpuErrcheck(cudaSetDevice(0));
+#endif
         gpuErrcheck(cudaMalloc((void **)&input, N * sizeof(T)));
         gpuErrcheck(cudaMemcpy(input, input_h, N * sizeof(T), cudaMemcpyHostToDevice));
-        int num_sm = 0;
-        int max_blocks_per_sm = 0;
-        gpuErrcheck(cudaDeviceGetAttribute(&num_sm, cudaDevAttrMultiProcessorCount, 0));
-        gpuErrcheck(cudaOccupancyMaxActiveBlocksPerMultiprocessor(
-            &max_blocks_per_sm, libra_batch<T, LOG_N, LOG_BLOCK_WIDTH>, THREAD_LIMIT, 0));
-        const unsigned hw_concurrency =
-            static_cast<unsigned>(((num_sm * max_blocks_per_sm) / 2) * 2);
-        static std::vector<unsigned> pages;
-        static std::vector<unsigned> diag;
-        static bool initialized = false;
-        unsigned b = 0;
-        if (!initialized) {
-            do {
-                unsigned rb = reverse<NUM_B_BITS>(b);
-                if (b != rb) {
-                    pages.push_back(b);
-                    pages.push_back(rb);
-                } else {
-                    diag.push_back(b);
-                }
-                b = gen_page(b);
-            } while (b);
-            initialized = true;
-        }
-        T *d_scratch = nullptr;
-        gpuErrcheck(cudaMalloc(&d_scratch,
-                               (unsigned long)hw_concurrency * BUF_ELEMS * sizeof(T)));
 
-        auto run = [&](std::vector<unsigned> &pages, bool is_diag) {
-            if (pages.empty())
-                return;
-            unsigned *d_pages = nullptr;
-            gpuErrcheck(cudaMalloc(&d_pages, pages.size() * sizeof(unsigned)));
-            gpuErrcheck(cudaMemcpy(d_pages, pages.data(), pages.size() * sizeof(unsigned),
-                                   cudaMemcpyHostToDevice));
-            unsigned total = static_cast<unsigned>(pages.size());
-            for (unsigned offset = 0; offset < total; offset += hw_concurrency) {
-                unsigned tile = std::min(hw_concurrency, total - offset);
-                if (is_diag) {
-                    libra_batch_diag<T, LOG_N, LOG_BLOCK_WIDTH>
-                        <<<tile, THREAD_LIMIT>>>(input, d_pages + offset, d_scratch);
-                } else {
-                    libra_batch<T, LOG_N, LOG_BLOCK_WIDTH>
-                        <<<tile, THREAD_LIMIT>>>(input, d_pages + offset, d_scratch);
-                }
-            }
-            gpuErrcheck(cudaDeviceSynchronize());
-            cudaFree(d_pages);
-        };
-        run(pages, false);
-        run(diag, true);
-        cudaFree(d_scratch);
+#ifndef TESTING
         cudaMemcpy(input_h, input, N * sizeof(T), cudaMemcpyDeviceToHost);
         cudaFree(input);
+#endif
     }
 
   private:
