@@ -62,7 +62,11 @@
                     # Required for clangd to work
                     export GCC_DIR="${pkgs.gcc.cc}"
                     export GCC_VER="${pkgs.gcc.version}"
-                    export CPLUS_INCLUDE_PATH="$GCC_DIR/include/c++/$GCC_VER:$GCC_DIR/include/c++/$GCC_VER/x86_64-unknown-linux-gnu:$CPLUS_INCLUDE_PATH"
+                    export CPLUS_INCLUDE_PATH="$GCC_DIR/include/c++/$GCC_VER:$GCC_DIR/include/c++/$GCC_VER/x86_64-unknown-linux-gnu:$CPLUS_INCLUDE_PATH:${
+                      pkgs.lib.makeLibraryPath [
+                        pkgs.cudatoolkit
+                      ]
+                    }"
                     export NIXPKGS_ALLOW_UNFREE=1
                     export NIX_ENFORCE_NO_NATIVE=0
 
