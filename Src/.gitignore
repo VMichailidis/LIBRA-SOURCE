@@ -1,0 +1,9 @@
+bin/**
+.direnv/**
+.cache/**
+doc/aux/**
+*.pdf
+src/benchmarks/**
+src/util/__pycache__/**
+vgcore.**
+cachegrind.out.*

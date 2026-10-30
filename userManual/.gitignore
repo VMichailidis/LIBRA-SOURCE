@@ -1,0 +1,5 @@
+.direnv/**
+.cache/**
+*.pdf
+vgcore.**
+cachegrind.out.*

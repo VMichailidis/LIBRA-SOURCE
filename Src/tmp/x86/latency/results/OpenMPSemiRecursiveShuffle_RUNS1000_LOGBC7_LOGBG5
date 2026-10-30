@@ -1,0 +1,15 @@
+OpenMPSemiRecursiveShuffle, 1000, 14, 3.2698e-05, 2.8884e-05, 3.7885e-05
+OpenMPSemiRecursiveShuffle, 1000, 15, 6.2127e-05, 5.5966e-05, 6.9059e-05
+OpenMPSemiRecursiveShuffle, 1000, 16, 5.24285e-05, 4.7644e-05, 6.304e-05
+OpenMPSemiRecursiveShuffle, 1000, 17, 0.000137001, 0.000127947, 0.000239321
+OpenMPSemiRecursiveShuffle, 1000, 18, 0.000442097, 0.000362726, 0.000741173
+OpenMPSemiRecursiveShuffle, 1000, 19, 0.00155837, 0.0010327, 0.00224039
+OpenMPSemiRecursiveShuffle, 1000, 20, 0.00221064, 0.00177322, 0.00410249
+OpenMPSemiRecursiveShuffle, 1000, 21, 0.00579959, 0.0048887, 0.00813567
+OpenMPSemiRecursiveShuffle, 1000, 22, 0.0126889, 0.0121852, 0.0147922
+OpenMPSemiRecursiveShuffle, 1000, 23, 0.0285915, 0.0278676, 0.0312466
+OpenMPSemiRecursiveShuffle, 1000, 24, 0.0550767, 0.0536867, 0.0566776
+OpenMPSemiRecursiveShuffle, 1000, 25, 0.174598, 0.17228, 0.176641
+OpenMPSemiRecursiveShuffle, 1000, 26, 0.300593, 0.296819, 0.307613
+OpenMPSemiRecursiveShuffle, 1000, 27, 0.701299, 0.69147, 0.771137
+OpenMPSemiRecursiveShuffle, 1000, 28, 0.985991, 0.97625, 1.05408
