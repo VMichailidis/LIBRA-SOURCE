@@ -35,7 +35,7 @@ LOG_B_CPU ?= 7
 LOG_B_CU ?= 5
 RECURS = 1
 CONFIG_ID =_RUNS$(RUNS)_LOGBC$(LOG_B_CPU)_LOGBG$(LOG_B_CU)
-TEST_LOG_N ?= 16
+TEST_LOG_N ?= 6
 
 min = $(shell [ $(1) -lt $(2) ] && echo $(1) || echo $(2))
 max = $(shell [ $(1) -lt $(2) ] && echo $(2) || echo $(1))

@@ -22,16 +22,17 @@ class Verifier {
         const unsigned long N = 1ul << LOG_N;
 #ifndef GPU_TYPE
         unsigned long *testArray = new unsigned long[N];
-        for (unsigned long i = 0; i < N; i++) {
-            testArray[i] = i;
-        }
 #else
-        T *testArray;
-        cudaError_t status = cudaMallocHost((void **)&testArray, N * sizeof(T));
+        unsigned long *testArray;
+        cudaError_t status =
+            cudaMallocHost((void **)&testArray, N * sizeof(unsigned long));
         if (status != cudaSuccess)
             printf("Error allocating pinned host memory\n");
 
 #endif
+        for (unsigned long i = 0; i < N; i++) {
+            testArray[i] = i;
+        }
         Shuffler<unsigned long, LOG_N
 #ifdef TEST_LOG_BLOCK_WIDTH
                  ,

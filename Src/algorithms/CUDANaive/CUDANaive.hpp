@@ -8,40 +8,21 @@
 #define THREAD_LIMIT 64
 
 template <typename T, unsigned char LOG_N>
-__device__ inline static unsigned long reverse_bitwise(unsigned long x) {
-    unsigned long maskFromLeft = 1 << LOG_N;
-    unsigned long res = 0;
-    unsigned int bitNum = LOG_N;
-    while (maskFromLeft > 0) {
-        unsigned char bit = (x & maskFromLeft) >> bitNum;
-        res |= (bit << (LOG_N - 1 - bitNum));
-        --bitNum;
-        maskFromLeft >>= 1;
-    }
-    return res;
-}
-
-template <typename T, unsigned char LOG_N>
 __global__ void kernel_swap_inplace(T *srcDst) {
-    int index = blockIdx.x * blockDim.x + threadIdx.x;
-
-    int reversed = reverse_bitwise<T, LOG_N>(index);
-
-    // every thread swaps one thing and seems like some of the threads
-    // will not even perform swapping
+    unsigned long index = (unsigned long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= (1ul << LOG_N))
+        return;
+    unsigned long reversed = __brev((unsigned)index) >> (32 - LOG_N);
     if (reversed < index) {
-
-        T temp = srcDst[index];
-
+        T tmp = srcDst[index];
         srcDst[index] = srcDst[reversed];
-        srcDst[reversed] = temp;
+        srcDst[reversed] = tmp;
     }
 }
-
 template <typename T, unsigned char NUM_BITS> void naiveGpuApply(T *input_array) {
     // here the data is on GPU
     // this part will recurse later
-    const unsigned long width = 1ul << (NUM_BITS / 2);
+    const unsigned long width = 1ul << NUM_BITS;
 
     int blockSize;
     int gridSize;
@@ -50,8 +31,8 @@ template <typename T, unsigned char NUM_BITS> void naiveGpuApply(T *input_array)
         blockSize = width;
         gridSize = 1;
     } else {
+        gridSize = (width + THREAD_LIMIT - 1) / THREAD_LIMIT;
         blockSize = THREAD_LIMIT;
-        gridSize = width / THREAD_LIMIT;
     }
 
     kernel_swap_inplace<T, NUM_BITS><<<gridSize, blockSize>>>(input_array);
