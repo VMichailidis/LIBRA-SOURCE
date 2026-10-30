@@ -32,25 +32,30 @@ __host__ __device__ inline static unsigned long reverse_bitwise(unsigned long x)
 }
 
 template <typename T, unsigned char LOG_N> __global__ void libra(T *__restrict__ signal) {
-    constexpr unsigned H_BITS = LOG_N / 2; // must be >= 1
-    constexpr unsigned MID_BITS = LOG_N - 2 * H_BITS;
-    constexpr unsigned H = 1u << H_BITS;
+    static_assert(LOG_N >= 2 && LOG_N / 2 <= 31, "unsupported size");
+    constexpr unsigned H_BITS = LOG_N / 2;
+    constexpr unsigned MID_BITS = LOG_N % 2;
+    constexpr unsigned long H = 1ul << H_BITS;
+    constexpr unsigned long TRI = H * (H - 1) / 2; // swaps per mid value
 
-    const unsigned lo = blockIdx.x * blockDim.x + threadIdx.x; // contiguous in memory
-    const unsigned u = blockIdx.y;
-    const unsigned mid = blockIdx.z;
-
-    if (lo >= H)
+    const unsigned long t = (unsigned long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (t >= TRI) // only the last block has idle threads
         return;
-    const unsigned rlo = __brev(lo) >> (32 - H_BITS);
-    if (u >= rlo)
-        return; // swap each pair once
-    const unsigned ru = __brev(u) >> (32 - H_BITS);
+    const unsigned long mid = blockIdx.y; // 0 when LOG_N is even
 
-    const unsigned long index =
-        ((unsigned long)u << (H_BITS + MID_BITS)) | ((unsigned long)mid << H_BITS) | lo;
-    const unsigned long xendi =
-        ((unsigned long)rlo << (H_BITS + MID_BITS)) | ((unsigned long)mid << H_BITS) | ru;
+    // Invert t = r(r-1)/2 + u, with 0 <= u < r
+    unsigned long r = (unsigned long)((1.0 + sqrt(1.0 + 8.0 * (double)t)) * 0.5);
+    while (r * (r - 1) / 2 > t)
+        --r; // fix rounding in either direction
+    while (r * (r + 1) / 2 <= t)
+        ++r;
+    const unsigned long u = t - r * (r - 1) / 2;
+
+    const unsigned long rr = __brev((unsigned)r) >> (32 - H_BITS); // rev(r)
+    const unsigned long ru = __brev((unsigned)u) >> (32 - H_BITS); // rev(u)
+
+    const unsigned long index = (u << (H_BITS + MID_BITS)) | (mid << H_BITS) | rr;
+    const unsigned long xendi = (r << (H_BITS + MID_BITS)) | (mid << H_BITS) | ru;
 
     T tmp = signal[index];
     signal[index] = signal[xendi];
@@ -63,7 +68,7 @@ class CULIBRAShuffle {
         static_assert(LOG_N / 2 <= 15, "gridDim.y is limited to 65535");
         constexpr unsigned long N = 1ul << LOG_N;
         constexpr unsigned long H = 1ul << (LOG_N / 2);
-        constexpr unsigned MID_BITS = LOG_N % 2;
+        constexpr unsigned long TRI = H * (H - 1) / 2;
 
         T *input = nullptr;
         gpuErrcheck(cudaSetDevice(0));
@@ -73,8 +78,7 @@ class CULIBRAShuffle {
 #endif
 
         dim3 block(THREAD_LIMIT);
-        dim3 grid((H + THREAD_LIMIT - 1) / THREAD_LIMIT, H, 1u << MID_BITS);
-
+        dim3 grid((TRI + THREAD_LIMIT - 1) / THREAD_LIMIT, 1u << (LOG_N % 2));
         libra<T, LOG_N><<<grid, block>>>(input);
         gpuErrcheck(cudaGetLastError());
         gpuErrcheck(cudaDeviceSynchronize());
