@@ -1,6 +1,6 @@
 TARGET ?= x86
 CC = g++
-FLAGS ?= -std=c++17 -O2 -ffast-math -march=native 
+FLAGS ?= -std=c++17 -O3 -ffast-math -march=native 
 NVCC = nvcc
 NVCCFLAGS = -Wno-deprecated-gpu-targets -g -diag-suppress 550 -x cu
 BIN_DIR = $(ROOT)/bin/$(TARGET)
@@ -28,7 +28,7 @@ RAW2CSV ?= uv run $(UTIL_DIR)/results2csv.py
 # BENCHMARKS
 DATATYPE = char
 LOWER = 4
-UPPER = 28
+UPPER = 32
 RUNS ?= 1000
 QUANT = 0.025
 LOG_B_CPU ?= 7
@@ -50,8 +50,8 @@ OpenMPfCOBRA\
 OpenMPLIBRAShuffle\
 OpenMPSemiRecursiveShuffle
 
-CUDA_LOWER = 15
-CUDA_UPPER = 28
+CUDA_LOWER = 20
+CUDA_UPPER = 32
 CUDA_DENOM = CULIBRAShuffle 
 CUDA =\
 CUDANaive\

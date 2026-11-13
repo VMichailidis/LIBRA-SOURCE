@@ -17,7 +17,7 @@ BLOCK_SIZES_GPU_CSV := $(ROOT)/results/$(ALG)_blocksizes_gpu.csv
 #1: bsize
 define B_TEST_CPU
 size_cpu_$(1):
-	@$$(MAKE) --no-print-directory -C $$(ALG_DIR)/$$(ALG) LOG_B_CPU=$(1) $$(TMP_DIR)/throughput/results/$$(ALG)_RUNS$$(RUNS)_LOGBC$(1)_LOGBG$$(LOG_B_CU)
+	@$$(MAKE) --no-print-directory -C $$(ALG_DIR)/$$(ALG) REQ_UPPER=28 REQ_LOWER=16 LOG_B_CPU=$(1) $$(TMP_DIR)/throughput/results/$$(ALG)_RUNS$$(RUNS)_LOGBC$(1)_LOGBG$$(LOG_B_CU)
 endef
 
 $(foreach b, $(B_SIZES),\
