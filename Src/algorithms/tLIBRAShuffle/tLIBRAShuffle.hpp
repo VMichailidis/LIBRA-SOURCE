@@ -52,6 +52,41 @@ class tLIBRAShuffle {
         free(buffer);
         return;
     }
+    inline static void gen_page(unsigned long &prev, unsigned long &rprev) {
+        constexpr unsigned long is_odd = NUM_B_BITS % 2;
+        constexpr unsigned long hwidth = NUM_B_BITS / 2;
+        constexpr unsigned long hmax = 1 << (NUM_B_BITS / 2);
+        constexpr unsigned long t = ~hmax & ((1ul << NUM_B_BITS) - 1);
+
+        unsigned long mid_point = is_odd ? hmax & prev : 0;
+
+        unsigned long lo = prev & (hmax - 1);
+        unsigned long rlo = rprev >> (hwidth + is_odd);
+        unsigned long up = prev >> (hwidth + is_odd);
+        unsigned long rup = rprev & (hmax - 1);
+
+        // In case we reached the last value, return
+        // 0 to signal that there's no next value
+        if (prev == (1 << NUM_B_BITS) - 1) {
+            // overflow to 0 once all combinations have been generated
+            prev = 0;
+            rprev = 0;
+        } else if (prev == t && is_odd) {
+            // overflow to 00..00100..00 once 11..11011..11 is reached
+            prev = hmax;
+            rprev = hmax;
+        } else if (rlo == up) {
+            // If we've reached a symetrical point, go down a row
+            advance_index_and_reversed<NUM_B_BITS / 2>(lo, rlo);
+            prev = 0 << (hwidth + is_odd) | mid_point | lo;
+            rprev = rlo << (hwidth + is_odd) | mid_point | 0;
+        } else {
+            advance_index_and_reversed<NUM_B_BITS / 2>(up, rup);
+            // Otherwise, move normally
+            prev = up << (hwidth + is_odd) | mid_point | lo;
+            rprev = rlo << (hwidth + is_odd) | mid_point | rup;
+        }
+    }
 
   private:
     static constexpr unsigned char NUM_B_BITS = LOG_N - (2 * LOG_BLOCK_WIDTH);
@@ -121,41 +156,6 @@ class tLIBRAShuffle {
                     array[a << (LOG_N - LOG_BLOCK_WIDTH) | page << LOG_BLOCK_WIDTH | c],
                     buffer[a << LOG_BLOCK_WIDTH | c]);
             }
-        }
-    }
-    inline static void gen_page(unsigned long &prev, unsigned long &rprev) {
-        constexpr unsigned long is_odd = NUM_B_BITS % 2;
-        constexpr unsigned long hwidth = NUM_B_BITS / 2;
-        constexpr unsigned long hmax = 1 << (NUM_B_BITS / 2);
-        constexpr unsigned long t = ~hmax & ((1ul << NUM_B_BITS) - 1);
-
-        unsigned long mid_point = is_odd ? hmax & prev : 0;
-
-        unsigned long lo = prev & (hmax - 1);
-        unsigned long rlo = rprev >> (hwidth + is_odd);
-        unsigned long up = prev >> (hwidth + is_odd);
-        unsigned long rup = rprev & (hmax - 1);
-
-        // In case we reached the last value, return
-        // 0 to signal that there's no next value
-        if (prev == (1 << NUM_B_BITS) - 1) {
-            // overflow to 0 once all combinations have been generated
-            prev = 0;
-            rprev = 0;
-        } else if (prev == t && is_odd) {
-            // overflow to 00..00100..00 once 11..11011..11 is reached
-            prev = hmax;
-            rprev = hmax;
-        } else if (rlo == up) {
-            // If we've reached a symetrical point, go down a row
-            advance_index_and_reversed<NUM_B_BITS / 2>(lo, rlo);
-            prev = 0 << (hwidth + is_odd) | mid_point | lo;
-            rprev = rlo << (hwidth + is_odd) | mid_point | 0;
-        } else {
-            advance_index_and_reversed<NUM_B_BITS / 2>(up, rup);
-            // Otherwise, move normally
-            prev = up << (hwidth + is_odd) | mid_point | lo;
-            rprev = rlo << (hwidth + is_odd) | mid_point | rup;
         }
     }
 };
