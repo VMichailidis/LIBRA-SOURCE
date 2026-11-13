@@ -35,6 +35,41 @@ colors = {
 }
 
 
+def rename(name):
+    names = {
+        "COBRAShuffle": "COBRA",
+        "CUDANaive": "Naive",
+        "CUDAReverse": "CUDA Reverse",
+        "CULIBRAShuffle": "CuLIBRA",
+        "fCOBRA": "f-COBRA",
+        "tLIBRAShuffle": "t-LIBRA",
+        "LIBRAShuffle": "LIBRA",
+        "LocalPairwiseShuffle": "Local Pairwise Shuffle",
+        "NaiveShuffle": "Naive",
+        "NOOP": "NOOP",
+        "OpenMPfCOBRA": "OpenMP f-COBRA",
+        "OpenMPLIBRAShuffle": "OpenMP LIBRA",
+        "OpenMPSemiRecursiveShuffle": "OpenMP Semi-Recursive Shuffle",
+        "RecursiveShuffle": "Recursive Shuffle",
+        "SemiRecursiveShuffle": "Semi-Recursive Shuffle",
+        "TableShuffle": "Table Shuffle",
+        "UnrolledShuffle": "Unrolled Shuffle",
+        "XORShuffle": "XOR Shuffle",
+    }
+    if name in names:
+        return names[name]
+    else:
+        return name.replace("Shuffle", "")
+
+
+def order_legends(handles, labels, data):
+    order = [len(handles) - 1 - i for i in range(len(handles))]
+    tuples = [(label, data[label].mean()) for label in labels]
+    tuples.sort(key=lambda x: x[1], reverse=True)
+    order = [labels.index(label) for label, _ in tuples]
+    return order
+
+
 def into_filesize(log2_value, suffix="B"):
     """Format 2**log2_value as a human readable quantity, e.g. 64KiB, 2GiB/s."""
     size = 2.0**log2_value
@@ -220,7 +255,12 @@ def plot(
     plt.xlabel("Input size")
     plt.grid(True)
     plt.ylabel(testclass.axis_name)
-    plt.legend()
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = order_legends(handles, labels, data_norm)
+    plt.legend(
+        [handles[idx] for idx in order],
+        [rename(labels[idx]) for idx in order],
+    )
     plt.tight_layout()
     if filename is None:
         plt.savefig(
