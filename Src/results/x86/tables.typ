@@ -18,48 +18,48 @@
   [Algorithms], [avg $T_("LIBRA")/T_("algorithm")$], table.hline(),
 
   [LocalPairwiseShuffle], [1.85],
-  [UnrolledShuffle], [0.75],
-  [NaiveShuffle], [21.17],
-  [XORShuffle], [2.20],
-  [TableShuffle], [2.10],
+  [UnrolledShuffle], [0.71],
+  [NaiveShuffle], [21.19],
+  [XORShuffle], [2.24],
+  [TableShuffle], [2.00],
 )
 #let NAIVE_latency_table = table(
   columns: 2,
   [Algorithms], [avg $L_("LIBRA")/L_("algorithm")$], table.hline(),
 
-  [LocalPairwiseShuffle], [1.82],
-  [UnrolledShuffle], [0.69],
-  [NaiveShuffle], [17.95],
-  [XORShuffle], [1.96],
-  [TableShuffle], [1.91],
+  [LocalPairwiseShuffle], [1.79],
+  [UnrolledShuffle], [0.67],
+  [NaiveShuffle], [18.49],
+  [XORShuffle], [1.98],
+  [TableShuffle], [1.80],
 )
 #let NAIVE_cache_misses_table = table(
   columns: 2,
   [Algorithms], [avg $C_("LIBRA")/C_("algorithm")$], table.hline(),
 
-  [LocalPairwiseShuffle], [1.00],
-  [UnrolledShuffle], [1.07],
+  [LocalPairwiseShuffle], [1.01],
+  [UnrolledShuffle], [1.12],
   [NaiveShuffle], [1.00],
   [XORShuffle], [0.96],
-  [TableShuffle], [1.11],
+  [TableShuffle], [1.14],
 )
 #let CACHED_throughput_table = table(
   columns: 2,
   [Algorithms], [avg $T_("LIBRA")/T_("algorithm")$], table.hline(),
 
-  [COBRAShuffle], [2.80],
-  [fCOBRA], [1.09],
-  [SemiRecursiveShuffle], [3.71],
-  [RecursiveShuffle], [4.03],
+  [COBRAShuffle], [3.02],
+  [fCOBRA], [1.39],
+  [SemiRecursiveShuffle], [3.09],
+  [RecursiveShuffle], [3.29],
 )
 #let CACHED_latency_table = table(
   columns: 2,
   [Algorithms], [avg $L_("LIBRA")/L_("algorithm")$], table.hline(),
 
-  [COBRAShuffle], [2.81],
-  [fCOBRA], [1.12],
-  [SemiRecursiveShuffle], [3.32],
-  [RecursiveShuffle], [3.56],
+  [COBRAShuffle], [3.08],
+  [fCOBRA], [1.22],
+  [SemiRecursiveShuffle], [2.64],
+  [RecursiveShuffle], [2.78],
 )
 #let CACHED_cache_misses_table = table(
   columns: 2,
@@ -67,27 +67,27 @@
 
   [COBRAShuffle], [1.87],
   [fCOBRA], [3.12],
-  [SemiRecursiveShuffle], [5.71],
-  [RecursiveShuffle], [5.71],
+  [SemiRecursiveShuffle], [5.96],
+  [RecursiveShuffle], [5.96],
 )
 #let OPEN_MP_throughput_table = table(
   columns: 2,
   [Algorithms], [avg $T_("LIBRA")/T_("algorithm")$], table.hline(),
 
-  [OpenMPfCOBRA], [3.82],
-  [OpenMPSemiRecursiveShuffle], [4.56],
+  [OpenMPfCOBRA], [4.04],
+  [OpenMPSemiRecursiveShuffle], [7.77],
 )
 #let OPEN_MP_latency_table = table(
   columns: 2,
   [Algorithms], [avg $L_("LIBRA")/L_("algorithm")$], table.hline(),
 
-  [OpenMPfCOBRA], [3.22],
-  [OpenMPSemiRecursiveShuffle], [4.38],
+  [OpenMPfCOBRA], [2.97],
+  [OpenMPSemiRecursiveShuffle], [3.79],
 )
 #let CUDA_throughput_table = table(
   columns: 2,
   [Algorithms], [avg $T_("LIBRA")/T_("algorithm")$], table.hline(),
 
-  [CUDANaive], [0.86],
-  [CUDAReverse], [1.56],
+  [CUDANaive], [1.06],
+  [CUDAReverse], [1.64],
 )

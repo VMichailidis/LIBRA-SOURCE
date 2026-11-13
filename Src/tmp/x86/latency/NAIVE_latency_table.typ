@@ -2,9 +2,9 @@
   columns: 2,
   [Algorithms], [avg $L_("LIBRA")/L_("algorithm")$], table.hline(),
 
-  [LocalPairwiseShuffle], [1.82],
-  [UnrolledShuffle], [0.69],
-  [NaiveShuffle], [17.95],
-  [XORShuffle], [1.96],
-  [TableShuffle], [1.91],
+  [LocalPairwiseShuffle], [1.79],
+  [UnrolledShuffle], [0.67],
+  [NaiveShuffle], [18.49],
+  [XORShuffle], [1.98],
+  [TableShuffle], [1.80],
 )

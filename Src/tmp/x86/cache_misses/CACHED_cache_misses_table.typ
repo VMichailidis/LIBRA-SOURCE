@@ -4,6 +4,6 @@
 
   [COBRAShuffle], [1.87],
   [fCOBRA], [3.12],
-  [SemiRecursiveShuffle], [5.71],
-  [RecursiveShuffle], [5.71],
+  [SemiRecursiveShuffle], [5.96],
+  [RecursiveShuffle], [5.96],
 )

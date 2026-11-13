@@ -13,7 +13,6 @@
 #include "../../algorithms/NaiveShuffle/NaiveShuffle.hpp"
 #endif
 // Input method is included via an include flag
-#include <complex>
 #include <iostream>
 int main() {
     {
@@ -26,7 +25,6 @@ int main() {
 }
 #endif
 #ifdef COBRA_TYPE
-#include <complex>
 #include <iostream>
 
 int main() {
@@ -41,7 +39,6 @@ int main() {
 }
 #endif
 #ifdef FCOBRA_TYPE
-#include <complex>
 #include <iostream>
 
 int main() {
@@ -56,7 +53,6 @@ int main() {
 }
 #endif
 #ifdef SEMI_REC_TYPE
-#include <complex>
 #include <iostream>
 int main() {
     {
@@ -70,7 +66,6 @@ int main() {
 }
 #endif
 #ifdef GPU_TYPE
-#include <complex>
 #include <cuda_runtime.h>
 #include <driver_types.h>
 #include <iostream>
@@ -86,7 +81,6 @@ int main() {
 }
 #endif
 #ifdef COBRA_GPU_TYPE
-#include <complex>
 #include <cuda_runtime.h>
 #include <driver_types.h>
 #include <iostream>

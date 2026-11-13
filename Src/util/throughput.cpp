@@ -13,18 +13,16 @@
 #include "../../algorithms/NaiveShuffle/NaiveShuffle.hpp"
 #endif
 // Input method is included via an include flag
-#include <complex>
 #include <iostream>
 int main() {
     {
         const unsigned char LOG_N = TEST_LOG_N;
         std::cout << XSTR(ALG) << ", " << RUNS << ", " << TEST_LOG_N << ", ";
-        TestRuntime<ALG, std::complex<DATATYPE>, LOG_N>::run(RUNS, QUANT);
+        TestRuntime<ALG, DATATYPE, LOG_N>::run(RUNS, QUANT);
     }
 }
 #endif
 #ifdef COBRA_TYPE
-#include <complex>
 #include <iostream>
 
 int main() {
@@ -32,13 +30,11 @@ int main() {
         const unsigned char LOG_BLOCK_WIDTH = TEST_LOG_BLOCK_WIDTH;
         const unsigned char LOG_N = TEST_LOG_N;
         std::cout << XSTR(ALG) << ", " << RUNS << ", " << TEST_LOG_N << ", ";
-        TestRuntime<ALG, std::complex<DATATYPE>, LOG_N, LOG_BLOCK_WIDTH>::run(RUNS,
-                                                                              QUANT);
+        TestRuntime<ALG, DATATYPE, LOG_N, LOG_BLOCK_WIDTH>::run(RUNS, QUANT);
     }
 }
 #endif
 #ifdef FCOBRA_TYPE
-#include <complex>
 #include <iostream>
 
 int main() {
@@ -51,20 +47,17 @@ int main() {
 }
 #endif
 #ifdef SEMI_REC_TYPE
-#include <complex>
 #include <iostream>
 int main() {
     {
         const unsigned char RECURSIONS_REMAINING = TEST_RECURSIONS_REMAINING;
         const unsigned char LOG_N = TEST_LOG_N;
         std::cout << XSTR(ALG) << ", " << RUNS << ", " << TEST_LOG_N << ", ";
-        TestRuntime<ALG, std::complex<DATATYPE>, LOG_N, RECURSIONS_REMAINING>::run(RUNS,
-                                                                                   QUANT);
+        TestRuntime<ALG, DATATYPE, LOG_N, RECURSIONS_REMAINING>::run(RUNS, QUANT);
     }
 }
 #endif
 #ifdef GPU_TYPE
-#include <complex>
 #include <cuda_runtime.h>
 #include <driver_types.h>
 #include <iostream>
@@ -73,12 +66,11 @@ int main() {
     {
         const unsigned char LOG_N = TEST_LOG_N;
         std::cout << XSTR(ALG) << ", " << RUNS << ", " << TEST_LOG_N << ", ";
-        TestRuntime<ALG, std::complex<DATATYPE>, LOG_N>::run(RUNS, QUANT);
+        TestRuntime<ALG, DATATYPE, LOG_N>::run(RUNS, QUANT);
     }
 }
 #endif
 #ifdef COBRA_GPU_TYPE
-#include <complex>
 #include <cuda_runtime.h>
 #include <driver_types.h>
 #include <iostream>
@@ -88,8 +80,7 @@ int main() {
         const unsigned char LOG_BLOCK_WIDTH = TEST_LOG_BLOCK_WIDTH;
         const unsigned char LOG_N = TEST_LOG_N;
         std::cout << XSTR(ALG) << ", " << RUNS << ", " << TEST_LOG_N << ", ";
-        TestRuntime<ALG, std::complex<DATATYPE>, LOG_N, LOG_BLOCK_WIDTH>::run(RUNS,
-                                                                              QUANT);
+        TestRuntime<ALG, DATATYPE, LOG_N, LOG_BLOCK_WIDTH>::run(RUNS, QUANT);
     }
 }
 #endif
